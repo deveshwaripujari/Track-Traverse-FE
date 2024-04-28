@@ -26,7 +26,7 @@ function App() {
   useEffect(() => {
     async function fetchMusic() {
       try {
-        const response = await axios.get('http://3.18.220.84:8082/api/music');
+        const response = await axios.get('http://3.18.215.126:8082/api/music');
         setMusic(response.data);
         setFilteredMusic(response.data); // Initialize filtered music with all music
       } catch (error) {
@@ -37,7 +37,7 @@ function App() {
     async function fetchPlaylists() {
       try {
         const token = localStorage.getItem('token'); // Retrieve token from localStorage
-        const response = await axios.get('http://3.18.220.84:8082/api/playlists', {
+        const response = await axios.get('http://3.18.215.126:8082/api/playlists', {
           headers: {
             Authorization: `Bearer ${token}`
           }

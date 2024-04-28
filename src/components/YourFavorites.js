@@ -13,7 +13,7 @@ function YourFavorites({ onClose }) {
     const fetchFavorites = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get('http://3.18.220.84:8082/api/favorites', {
+            const response = await axios.get('http://3.18.215.126:8082/api/favorites', {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -27,7 +27,7 @@ function YourFavorites({ onClose }) {
     const handleRemoveFromFavorites = async (trackId) => {
         try {
             const token = localStorage.getItem('token');
-            await axios.delete(`http://3.18.220.84:8082/api/favorites/remove`, {
+            await axios.delete(`http://3.18.215.126:8082/api/favorites/remove`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 },

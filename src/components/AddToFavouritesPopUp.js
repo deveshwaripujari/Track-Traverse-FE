@@ -5,7 +5,7 @@ function AddToFavoritesPopup({ trackId, onClose }) {
     const handleAddToFavorites = async () => {
         const token = localStorage.getItem('token');
         try {
-            await axios.post('http://3.18.220.84:8082/api/favorites/add', {
+            await axios.post('http://3.18.215.126:8082/api/favorites/add', {
                 trackId
             }, {
                 headers: { Authorization: `Bearer ${token}` }
