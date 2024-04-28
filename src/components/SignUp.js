@@ -7,11 +7,12 @@ function SignUp({ onClose }) {
 
   const handleSignUp = async () => {
     try {
-      await axios.post('http://localhost:8081/api/signup', { email, password });
+      await axios.post('http://localhost:8082/api/signup', { email, password });
       console.log('User signed up successfully');
       onClose(); // Close the popup after successful signup
     } catch (error) {
       console.error('Signup Error:', error.response.data.error);
+      alert("Signup failed !")
     }
   };
 

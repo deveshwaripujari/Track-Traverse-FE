@@ -7,13 +7,13 @@ function Login({ onClose }) {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://localhost:8081/api/login', { email, password });
+      const response = await axios.post('http://localhost:8082/api/login', { email, password });
       const token = response.data.token;
       console.log('token')
       const config = {
         headers: {
-            Authorization: `Bearer ${token}`
-          }
+          Authorization: `Bearer ${token}`
+        }
       };
       // Store token in local storage or session storage
       localStorage.setItem('token', token);
@@ -22,6 +22,7 @@ function Login({ onClose }) {
       window.location.reload();
     } catch (error) {
       console.error('Login Error:', error.response.data.error);
+      alert("Login Failure. Try again !")
     }
   };
 

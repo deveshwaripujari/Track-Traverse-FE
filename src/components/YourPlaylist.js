@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import deleteIcon from '../asset/delete-icon.png'
+import closeIcon from '../asset/close-icon.png'
+import playlistIcon from '../asset/playlist-icon.png'
 
 function YourPlaylist({ onClose }) {
   const [playlists, setPlaylists] = useState([]);
@@ -27,11 +29,12 @@ function YourPlaylist({ onClose }) {
   const fetchPlaylists = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:8081/api/playlists', {
+      const response = await axios.get('http://localhost:8082/api/playlists', {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
+      console.log(response.data)
       setPlaylists(response.data);
     } catch (error) {
       console.error('Error fetching playlists:', error);
@@ -41,7 +44,7 @@ function YourPlaylist({ onClose }) {
   const handlePlaylistClick = async (playlistId) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`http://localhost:8081/api/playlists/tracks/${playlistId}`, {
+      const response = await axios.get(`http://localhost:8082/api/playlists/tracks/${playlistId}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -57,7 +60,7 @@ function YourPlaylist({ onClose }) {
     try {
       const token = localStorage.getItem('token');
       // Make a DELETE request to the server to delete the playlist
-      await axios.delete(`http://localhost:8081/api/playlists/${playlistId}`, {
+      await axios.delete(`http://localhost:8082/api/playlists/${playlistId}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -73,7 +76,7 @@ function YourPlaylist({ onClose }) {
     try {
       const token = localStorage.getItem('token');
       // Make a DELETE request to the server to delete the track from the playlist
-      await axios.delete(`http://localhost:8081/api/deleteTrack`, {
+      await axios.delete(`http://localhost:8082/api/deleteTrack`, {
         headers: {
           Authorization: `Bearer ${token}`
         },
@@ -94,51 +97,65 @@ function YourPlaylist({ onClose }) {
   return (
     <div className="playlist-popup-overlay">
       <div className="playlist-popup">
+        <img src={closeIcon} alt="Close" className="close-icon" onClick={onClose} />
         <div className="playlist-content">
           <h2>Your Playlists</h2>
           <ul>
             {playlists && playlists.map(playlist => (
               <li key={playlist.playlist_id} onClick={() => handlePlaylistClick(playlist.playlist_id)}>
-                {playlist.playlist_name || "Unknown Playlist"}
+                <img
+                  src={playlistIcon}
+                  alt="Cover"
+                  style={{ width: '60px', height: '40px', marginRight: 0 }}
+                />
+                <div className="playlist-title">
+                  {playlist.playlist_name || "Unknown Playlist"}
+                </div>
                 <img
                   src={deleteIcon}
                   alt="Delete"
+                  className="delete-icon-pl"
                   onClick={(e) => {
                     e.stopPropagation(); // Prevent the handlePlaylistClick from being triggered
-                    handleDeletePlaylist(playlist.playlist_id);  // Call a function to delete the playlist
+                    handleDeletePlaylist(playlist.playlist_id); // Call a function to delete the playlist
                   }}
                 />
               </li>
             ))}
           </ul>
-          <button onClick={onClose}>Close</button>
+          {/* <button onClick={onClose}>Close</button> */}
         </div>
+        {selectedPlaylist && playlists.some(playlist => playlist.playlist_id === selectedPlaylist) && (
+          <div className="playlist-tracks">
+            <h2>
+              Tracks in {playlists.find(playlist => playlist.playlist_id === selectedPlaylist)?.playlist_name || "Unknown Playlist"}
+            </h2>
+            <ul>
+              {tracks.map(track => (
+                <li key={track.TrackId} className="track-item">
+                  <img src={track.AlbumImageUrl} alt={track.TrackName} className="album-cover" />
+                  <div className="track-info">
+                    <div className="track-title">
+                      {track.TrackName}
+                      <span className="album-name">{track.AlbumName}</span>
+                      <span className="artist-name">{track.ArtistName}</span>
+                    </div>
+                    <img
+                      src={deleteIcon}
+                      alt="Delete"
+                      className='delete-icon-pl-tr'
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent the handlePlaylistClick from being triggered
+                        handleDeleteTrack(track.TrackId, selectedPlaylist); // Pass trackId and playlistId
+                      }}
+                    />
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
-      {selectedPlaylist && playlists.some(playlist => playlist.playlist_id === selectedPlaylist) && (
-        <div className="playlist-tracks">
-          <h2>
-            Tracks in {playlists.find(playlist => playlist.playlist_id === selectedPlaylist)?.playlist_name || "Unknown Playlist"}
-          </h2>
-          <ul>
-            {tracks.map(track => (
-              <li key={track.TrackId}>
-                <div>
-                  Title: {track.TrackName}
-                  <img
-                    src={deleteIcon}
-                    alt="Delete"
-                    onClick={(e) => {
-                      e.stopPropagation(); // Prevent the handlePlaylistClick from being triggered
-                      handleDeleteTrack(track.TrackId, selectedPlaylist); // Pass trackId and playlistId
-                    }}
-                  />
-                </div>
-                {/* Add more track information here */}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
     </div>
   );
 }

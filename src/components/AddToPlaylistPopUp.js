@@ -1,91 +1,63 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import playlistIcon from '../asset/AddToPlaylistIcon.png'; // Ensure this path is correct
 
-function AddToPlaylistPopup({ trackId, onClose, onSelectPlaylist, onCreateNewPlaylist }) {
+function AddToPlaylistPopup({ trackId, onClose, onSelectPlaylist }) {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [newPlaylistName, setNewPlaylistName] = useState('');
   const [userPlaylists, setUserPlaylists] = useState([]);
-  const [selectedTrackId, setSelectedTrackId] = useState(null); // Added state for selected track ID
 
   useEffect(() => {
-    // No initial fetch here, we'll fetch playlists only when needed
-  }, []);
-
-  const fetchUserPlaylists = async () => {
-    try {
+    const fetchUserPlaylists = async () => {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:8081/api/playlists', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+      const response = await axios.get('http://localhost:8082/api/playlists', {
+        headers: { Authorization: `Bearer ${token}` }
       });
       setUserPlaylists(response.data);
-    } catch (error) {
-      console.error('Error fetching user playlists:', error);
-    }
-  };
+    };
 
-  const handleSelectPlaylist = async (playlistId) => {
-    setShowCreateForm(false);
+    fetchUserPlaylists();
+  }, []);
+
+  const handleAddToPlaylist = async (playlistId, trackId) => {
+    const token = localStorage.getItem('token');
     try {
-      await fetchUserPlaylists();
-      onSelectPlaylist(playlistId);
-      console.log("trackID : ", trackId)
-      console.log("playlistID : ", playlistId)
-      if (trackId && playlistId) {
-        handleAddToPlaylist(playlistId, trackId); // Call handleAddToPlaylist when both track and playlist are selected
-      }
+      await axios.post('http://localhost:8082/api/playlists/add-track', {
+        playlistId,
+        trackId
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      console.log(`Track ${trackId} added to playlist ${playlistId}`);
+      onClose(); // Close the popup after adding
     } catch (error) {
-      console.error('Error fetching user playlists:', error);
+      console.error('Error adding track to playlist:', error);
+      alert("Error adding track to playlist !")
     }
   };
 
-  const handleCreateNewPlaylist = async () => {
+  const handleSelectPlaylist = (playlistId) => {
+    setShowCreateForm(false);
+    handleAddToPlaylist(playlistId, trackId);
+  };
+
+  const handleCreateNewPlaylist = () => {
     setShowCreateForm(true);
   };
 
   const handleSubmitNewPlaylist = async () => {
+    const token = localStorage.getItem('token');
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.post(
-        'http://localhost:8081/api/create-playlists',
-        { playlistName: newPlaylistName },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
-      setUserPlaylists([...userPlaylists, { id: response.data.playlistId, playlist_name: newPlaylistName }]);
-      onSelectPlaylist(response.data.playlistId);
-      if (selectedTrackId) {
-        handleAddToPlaylist(response.data.playlistId, selectedTrackId); // Call handleAddToPlaylist when track is selected after creating a new playlist
-      }
+      const response = await axios.post('http://localhost:8082/api/create-playlists', {
+        playlistName: newPlaylistName
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const newPlaylistId = response.data.playlistId;
+      setUserPlaylists([...userPlaylists, { playlist_id: newPlaylistId, playlist_name: newPlaylistName }]);
+      handleAddToPlaylist(newPlaylistId, trackId);
     } catch (error) {
       console.error('Error creating playlist:', error);
-    }
-    setNewPlaylistName('');
-    setShowCreateForm(false);
-    onClose();
-  };
-
-  const handleAddToPlaylist = async (playlistId, trackId) => {
-    try {
-        // console.log('Hello')
-        console.log(playlistId, trackId)
-      const token = localStorage.getItem('token');
-      await axios.post(
-        'http://localhost:8081/api/playlists/add-track',
-        { playlistId, trackId },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
-      // Track added to playlist successfully
-    } catch (error) {
-      console.error('Error adding track to playlist:', error);
     }
   };
 
@@ -97,10 +69,10 @@ function AddToPlaylistPopup({ trackId, onClose, onSelectPlaylist, onCreateNewPla
             <button className='close-button' onClick={onClose}>X</button>
           </div>
           <div className='popup-options'>
-            <button onClick={handleSelectPlaylist}>Select Playlist</button>
+            <button onClick={() => setShowCreateForm(false)}>Select Playlist</button>
             <button onClick={handleCreateNewPlaylist}>Create New Playlist</button>
           </div>
-          {showCreateForm && (
+          {showCreateForm ? (
             <div className='create-form'>
               <input
                 type='text'
@@ -110,18 +82,17 @@ function AddToPlaylistPopup({ trackId, onClose, onSelectPlaylist, onCreateNewPla
               />
               <button onClick={handleSubmitNewPlaylist}>Create</button>
             </div>
-          )}
-          {userPlaylists.length > 0 && !showCreateForm && (
-            <div className='user-playlists'>
-              <h3>Your Playlists</h3>
-              <ul>
-                {userPlaylists.map(playlist => (
-                  <li key={playlist.playlist_id} onClick={() => handleSelectPlaylist(playlist.playlist_id)}>
+          ) : (
+            <ul className="user-playlists-ul">
+              {userPlaylists.map(playlist => (
+                <li key={playlist.playlist_id} onClick={() => handleSelectPlaylist(playlist.playlist_id)}>
+                  <img src={playlistIcon} alt="Playlist Icon" className="playlist-icon" />
+                  <div className='playlist-name'>
                     {playlist.playlist_name}
-                  </li>
-                ))}
-              </ul>
-            </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
           )}
         </div>
       </div>
