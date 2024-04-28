@@ -7,7 +7,7 @@ function Login({ onClose }) {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://localhost:8082/api/login', { email, password });
+      const response = await axios.post('http://3.18.220.84:8082/api/login', { email, password });
       const token = response.data.token;
       console.log('token')
       const config = {

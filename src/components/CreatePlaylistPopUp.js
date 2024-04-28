@@ -7,7 +7,7 @@ function CreatePlaylistPopup({ onClose, onCreate }) {
   const handleCreatePlaylist = () => {
     if (playlistName.trim() !== '') {
       const token = localStorage.getItem('token'); // Ensure the token is stored in localStorage
-      axios.post('http://localhost:8082/api/create-playlists', { playlistName }, {
+      axios.post('http://3.18.220.84:8082/api/create-playlists', { playlistName }, {
         headers: {
           Authorization: `Bearer ${token}`
         }

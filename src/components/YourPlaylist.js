@@ -29,7 +29,7 @@ function YourPlaylist({ onClose }) {
   const fetchPlaylists = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:8082/api/playlists', {
+      const response = await axios.get('http://3.18.220.84:8082/api/playlists', {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -44,7 +44,7 @@ function YourPlaylist({ onClose }) {
   const handlePlaylistClick = async (playlistId) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`http://localhost:8082/api/playlists/tracks/${playlistId}`, {
+      const response = await axios.get(`http://3.18.220.84:8082/api/playlists/tracks/${playlistId}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -60,7 +60,7 @@ function YourPlaylist({ onClose }) {
     try {
       const token = localStorage.getItem('token');
       // Make a DELETE request to the server to delete the playlist
-      await axios.delete(`http://localhost:8082/api/playlists/${playlistId}`, {
+      await axios.delete(`http://3.18.220.84:8082/api/playlists/${playlistId}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -76,7 +76,7 @@ function YourPlaylist({ onClose }) {
     try {
       const token = localStorage.getItem('token');
       // Make a DELETE request to the server to delete the track from the playlist
-      await axios.delete(`http://localhost:8082/api/deleteTrack`, {
+      await axios.delete(`http://3.18.220.84:8082/api/deleteTrack`, {
         headers: {
           Authorization: `Bearer ${token}`
         },

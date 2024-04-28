@@ -10,7 +10,7 @@ function AddToPlaylistPopup({ trackId, onClose, onSelectPlaylist }) {
   useEffect(() => {
     const fetchUserPlaylists = async () => {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:8082/api/playlists', {
+      const response = await axios.get('http://3.18.220.84:8082/api/playlists', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setUserPlaylists(response.data);
@@ -22,7 +22,7 @@ function AddToPlaylistPopup({ trackId, onClose, onSelectPlaylist }) {
   const handleAddToPlaylist = async (playlistId, trackId) => {
     const token = localStorage.getItem('token');
     try {
-      await axios.post('http://localhost:8082/api/playlists/add-track', {
+      await axios.post('http://3.18.220.84:8082/api/playlists/add-track', {
         playlistId,
         trackId
       }, {
@@ -48,7 +48,7 @@ function AddToPlaylistPopup({ trackId, onClose, onSelectPlaylist }) {
   const handleSubmitNewPlaylist = async () => {
     const token = localStorage.getItem('token');
     try {
-      const response = await axios.post('http://localhost:8082/api/create-playlists', {
+      const response = await axios.post('http://3.18.220.84:8082/api/create-playlists', {
         playlistName: newPlaylistName
       }, {
         headers: { Authorization: `Bearer ${token}` }
